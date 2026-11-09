@@ -1,14 +1,28 @@
-export default function Home() {
+import { auth } from "@/auth";
+import Dashboard from "@/components/dashboard";
+import SignIn from "@/components/sign-in";
+
+export default async function Home() {
+  const providers = {
+    discord: Boolean(process.env.AUTH_DISCORD_ID && process.env.AUTH_DISCORD_SECRET),
+    kick: Boolean(process.env.AUTH_KICK_ID && process.env.AUTH_KICK_SECRET),
+  };
+  const configured = Boolean(process.env.AUTH_SECRET);
+
+  if (!configured) {
+    return <SignIn providers={providers} setupRequired />;
+  }
+
+  const session = await auth();
+  if (!session?.user?.id) {
+    return <SignIn providers={providers} />;
+  }
+
   return (
-    <main className="home">
-      <section className="welcome" aria-labelledby="welcome-heading">
-        <p className="eyebrow">1stWeb</p>
-        <h1 id="welcome-heading">Your website starts here.</h1>
-        <p className="description">
-          This Next.js app is ready to build and deploy. Replace this starter
-          page with your website content whenever you’re ready.
-        </p>
-      </section>
-    </main>
+    <Dashboard
+      displayName={session.user.name || "Viewer"}
+      avatarUrl={session.user.image || ""}
+      isAdmin={Boolean(process.env.RAFFLE_ADMIN_ID) && session.user.id === process.env.RAFFLE_ADMIN_ID}
+    />
   );
 }
