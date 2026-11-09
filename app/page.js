@@ -3,11 +3,11 @@ import Dashboard from "@/components/dashboard";
 import SignIn from "@/components/sign-in";
 
 export default async function Home() {
-  const providers = {
-    discord: Boolean(process.env.AUTH_DISCORD_ID && process.env.AUTH_DISCORD_SECRET),
-    kick: Boolean(process.env.AUTH_KICK_ID && process.env.AUTH_KICK_SECRET),
-  };
   const configured = Boolean(process.env.AUTH_SECRET);
+  const providers = {
+    discord: configured && Boolean(process.env.AUTH_DISCORD_ID && process.env.AUTH_DISCORD_SECRET),
+    kick: configured && Boolean(process.env.AUTH_KICK_ID && process.env.AUTH_KICK_SECRET),
+  };
 
   if (!configured) {
     return <SignIn providers={providers} setupRequired />;
@@ -23,6 +23,7 @@ export default async function Home() {
       displayName={session.user.name || "Viewer"}
       avatarUrl={session.user.image || ""}
       isAdmin={Boolean(process.env.RAFFLE_ADMIN_ID) && session.user.id === process.env.RAFFLE_ADMIN_ID}
+      provider={session.user.id.split(":", 1)[0]}
     />
   );
 }

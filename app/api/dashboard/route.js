@@ -31,6 +31,14 @@ export async function GET() {
       .maybeSingle();
     if (checkinError) throw checkinError;
 
+    const { data: transactions, error: transactionsError } = await client
+      .from("point_transactions")
+      .select("id, amount, reason, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(12);
+    if (transactionsError) throw transactionsError;
+
     const { data: currentRaffle, error: raffleError } = await client
       .from("raffles")
       .select("id, raffle_month, closes_at, drawn_at, winner_entry_id")
@@ -120,6 +128,12 @@ export async function GET() {
         streak: profile.current_streak,
       },
       checkedInToday: Boolean(todayCheckin),
+      transactions: (transactions || []).map((transaction) => ({
+        id: transaction.id,
+        amount: transaction.amount,
+        reason: transaction.reason,
+        createdAt: transaction.created_at,
+      })),
       raffle,
       previousRaffle,
     });
