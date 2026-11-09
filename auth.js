@@ -46,7 +46,7 @@ const kick = {
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [Discord, kick],
+  providers: [Discord({ issuer: "https://discord.com" }), kick],
   trustHost: true,
   session: { strategy: "jwt" },
   callbacks: {

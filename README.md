@@ -60,6 +60,10 @@ To find your owner ID, sign in once and look for your `user_id` in the Supabase 
 
 Keep `.env.local` and all secrets out of GitHub. `.gitignore` excludes local environment files; `.env.example` contains placeholders only.
 
+## Discord callback troubleshooting
+
+The Discord provider returns the authorization-response issuer `https://discord.com`. The app configures this issuer explicitly so Auth.js validates Discord's `iss` response parameter against Discord rather than Auth.js's fallback issuer. If Vercel logs an `unexpected "iss" (issuer) response parameter value` error, deploy the latest commit and retry Discord sign-in.
+
 ## Rewards rules
 
 - Check-in days roll over at **00:30 UTC+2**. A check-in awards 10 points.
